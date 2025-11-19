@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useDataSync } from '../context/DataSyncContext';
 import { useUIState } from '../context/UIStateContext';
 import CardGrid from './CardGrid';
@@ -63,10 +64,23 @@ const FlashcardsPage = () => {
     setEditingCard(null);
   };
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 }
+  };
+
    return (
-    <div className="main-content">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3 }}
+      className="main-content p-8"
+    >
       <div className="flashcards-page-header">
-        <h1>Flashcards</h1>
+        <h1 className="text-3xl font-bold">Flashcards</h1>
         <p>Gérez et révisez vos cartes</p>
       </div>
 
@@ -109,13 +123,14 @@ const FlashcardsPage = () => {
               </option>
             ))}
           </select>
-          <button
+          <motion.button
             className="btn btn-primary flex items-center gap-2"
             onClick={() => setShowReviewSetupModal(true)}
+            whileTap={{ scale: 0.95 }}
           >
             <Brain size={18} />
             <span>Réviser ({dueCardsCount})</span>
-          </button>
+          </motion.button>
         </div>
         <div className="view-toggle md:ml-auto">
           <button
@@ -162,7 +177,7 @@ const FlashcardsPage = () => {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
-    </div>
+    </motion.div>
   );
 };
 

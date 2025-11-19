@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useDataSync } from '../context/DataSyncContext';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Clock, BookOpen, Search } from 'lucide-react';
@@ -70,8 +71,21 @@ const CoursePage = () => {
     );
   }
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 }
+  };
+
   return (
-    <div className="main-content">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3 }}
+      className="main-content p-8"
+    >
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">Mes Cours</h1>
@@ -121,7 +135,7 @@ const CoursePage = () => {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

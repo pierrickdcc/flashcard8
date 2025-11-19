@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { Edit, Trash2, Inbox, Clock, Zap } from 'lucide-react';
 import EmptyState from './EmptyState';
+import Card3D from './Card3D'; // Importer le composant 3D
 import { useAuth } from '../context/AuthContext';
 import { db } from '../db';
 
@@ -37,7 +38,7 @@ const CardGrid = ({ filteredCards, setEditingCard, deleteCardWithSync, subjects 
         const easeFactor = progress?.easeFactor || 2.5;
 
         return (
-          <div key={card.id} className="flash-card">
+          <Card3D key={card.id} className="flash-card">
             <div>
               <div className="card-top">
                 <span className="subject-badge">
@@ -76,7 +77,7 @@ const CardGrid = ({ filteredCards, setEditingCard, deleteCardWithSync, subjects 
                 </span>
               </div>
             </div>
-          </div>
+          </Card3D>
         );
       })}
     </div>

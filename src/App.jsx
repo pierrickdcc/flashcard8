@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { useAuth } from './context/AuthContext';
 import { useDataSync } from './context/DataSyncContext';
 import { useUIState } from './context/UIStateContext';
@@ -14,17 +15,19 @@ import FlashcardsPage from './components/FlashcardsPage';
 import MainLayout from './components/MainLayout';
 import MemoWallPage from './components/MemoWallPage'; 
 import StatsPage from './components/StatsPage';
+import CardFanLoader from './components/CardFanLoader';
 
 const App = () => {
   const { session, isConfigured, loading: authLoading } = useAuth();
   const { startReview, isLoading: dataLoading } = useDataSync();
   const { reviewMode, reviewCards, selectedSubjects } = useUIState();
   const navigate = useNavigate();
+  const location = useLocation();
 
   if (authLoading || dataLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div className="spinner"></div>
+      <div className="w-screen h-screen flex items-center justify-center bg-bg-body">
+        <CardFanLoader />
       </div>
     );
   }
@@ -46,9 +49,10 @@ const App = () => {
 
   return (
     <MainLayout>
-      <Routes>
-        <Route path="/" element={ <HomePage isConfigured={isConfigured} /> } />
-        <Route path="/flashcards" element={<FlashcardsPage />} />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={ <HomePage isConfigured={isConfigured} /> } />
+          <Route path="/flashcards" element={<FlashcardsPage />} />
         <Route path="/courses" element={<CoursePage />} />
         <Route path="/courses/:courseId" element={<CourseViewer />} />
         
@@ -61,7 +65,8 @@ const App = () => {
             onClose={() => navigate('/')}
           />}
         />
-      </Routes>
+        </Routes>
+      </AnimatePresence>
     </MainLayout>
   );
 };

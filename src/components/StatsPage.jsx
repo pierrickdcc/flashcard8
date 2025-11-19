@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useDataSync } from '../context/DataSyncContext';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
@@ -260,8 +261,21 @@ const StatsPage = () => {
     return masteryData;
   }, [cards, subjects, userCardProgress]);
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 }
+  };
+
   return (
-    <div className="stats-page-container">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3 }}
+      className="stats-page-container p-8"
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>
           <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--text-heading-color)', marginBottom: '0.5rem' }}>
@@ -543,7 +557,7 @@ const StatsPage = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
