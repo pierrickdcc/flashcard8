@@ -53,8 +53,8 @@ const MemoWall = ({ onMemoSelect }) => {
 
   const { pinnedMemos, unpinnedMemos } = useMemo(() => {
     if (!memos || memos.length === 0) return { pinnedMemos: [], unpinnedMemos: [] };
-    const pinned = memos.filter(m => m.isPinned).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-    const unpinned = memos.filter(m => !m.isPinned).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    const pinnedMemos = memos.filter(m => m.isPinned).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    const unpinnedMemos = memos.filter(m => !m.isPinned).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     return { pinnedMemos, unpinnedMemos };
   }, [memos]);
 
