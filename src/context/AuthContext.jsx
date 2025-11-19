@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       
       // Si l'utilisateur est connecté et n'a pas de workspace personnalisé,
       // créer un workspace basé sur son email
-      if (session && session.user && session.user.email && savedWorkspace.startsWith('workspace_')) {
+      if (session && session.user && typeof session.user.email === 'string' && savedWorkspace.startsWith('workspace_')) {
         const userWorkspace = session.user.email.split('@')[0];
         setWorkspaceId(userWorkspace);
         console.log('✅ Workspace personnalisé créé:', userWorkspace);
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
       // --- CORRECTION APPLIQUÉE ICI ---
       // On utilise `savedWorkspace` (correctement capturé par la closure) 
       // au lieu de `workspaceId` (qui était obsolète et valait '').
-      if (session && session.user && session.user.email && savedWorkspace.startsWith('workspace_')) {
+      if (session && session.user && typeof session.user.email === 'string' && savedWorkspace.startsWith('workspace_')) {
         const userWorkspace = session.user.email.split('@')[0];
         setWorkspaceId(userWorkspace);
         console.log('✅ Workspace mis à jour lors de la connexion:', userWorkspace);

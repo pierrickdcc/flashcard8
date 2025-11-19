@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useUIState } from '../context/UIStateContext';
 import MemoWall from './MemoWall';
 
@@ -10,8 +11,21 @@ const MemoWallPage = () => {
     setShowMemoModal(true);
   };
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 }
+  };
+
   return (
-    <div className="main-content">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.3 }}
+      className="main-content p-8"
+    >
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">Mes Mémos</h1>
@@ -19,7 +33,7 @@ const MemoWallPage = () => {
         </div>
       </div>
       <MemoWall onMemoSelect={handleMemoSelect} />
-    </div>
+    </motion.div>
   );
 };
 

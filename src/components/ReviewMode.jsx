@@ -1,5 +1,6 @@
 // src/components/ReviewMode.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDataSync } from '../context/DataSyncContext';
 import { useUIState } from '../context/UIStateContext';
@@ -26,6 +27,16 @@ const ReviewMode = () => {
 
   // Gestion de la fin de la session
   const isFinished = !currentCard || currentIndex >= reviewCards.length;
+
+  useEffect(() => {
+    if (isFinished) {
+      confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+    }
+  }, [isFinished]);
 
   const handleCardClick = () => {
     if (!isFlipped && !isFinished) {
@@ -114,10 +125,28 @@ const ReviewMode = () => {
         </div>
       </header>
 
-      <main className={styles.reviewMain} onClick={handleCardClick}>
-        <div className={styles.cardScene}>
+      <main className={styles.reviewMain}>
+        <AnimatePresence>
+        {!isFinished && (
+        <motion.div
+          key={currentIndex}
+          className={styles.cardScene}
+          drag="x"
+          dragConstraints={{ left: -200, right: 200 }}
+          onDragEnd={(event, info) => {
+            if (info.offset.x > 100) { // Swipe Droit (Facile)
+              handleRating(4);
+            } else if (info.offset.x < -100) { // Swipe Gauche (Difficile)
+              handleRating(2);
+            }
+          }}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ x: info => info.offset.x > 0 ? 300 : -300, opacity: 0 }}
+        >
           <motion.div
             className={styles.cardFlipper}
+            onClick={handleCardClick}
             initial={false}
             animate={{ rotateY: isFlipped ? 180 : 0 }}
             transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
@@ -166,7 +195,9 @@ const ReviewMode = () => {
               </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
+        )}
+        </AnimatePresence>
       </main>
 
       <footer className={styles.reviewFooter} style={{ padding: '2rem', background: 'var(--background-body)' }}>

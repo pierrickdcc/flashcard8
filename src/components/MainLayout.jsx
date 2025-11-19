@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import MobileNav from './MobileNav';
 import AppHeader from './AppHeader';
-import NavigationBar from './NavigationBar';
-import FloatingActionButton from './FloatingActionButton';
-import StatsBanner from './StatsBanner';
-import SyncIndicator from './SyncIndicator'; // ← NOUVEAU
+import SyncIndicator from './SyncIndicator';
 import { useUIState } from '../context/UIStateContext';
 import { useAuth } from '../context/AuthContext';
 import { useDataSync } from '../context/DataSyncContext';
@@ -53,31 +52,25 @@ const MainLayout = ({ children }) => {
     }
   };
 
-  const toggleProfileModal = () => setIsProfileModalOpen(!isProfileModalOpen);
-
   const location = useLocation();
-  const currentPath = location.pathname;
-
   let fabOnClick = () => setShowAddContentModal(true);
-  let isFabVisible = true;
-
-  if (currentPath === '/memos') {
+  if (location.pathname === '/memos') {
     fabOnClick = () => setShowMemoModal(true);
-  } else if (currentPath === '/stats') {
-    isFabVisible = false;
   }
 
   return (
-    <div className="min-h-screen bg-background-body">
-      {location.pathname !== '/login' && <AppHeader />}
-
-      <StatsBanner />
-      <NavigationBar onProfileClick={toggleProfileModal} />
-      <main className="pb-20 md:pb-0">
-          {children}
-      </main>
+    <div className="flex h-screen bg-bg-body text-main">
+      <Sidebar />
       
-      {isFabVisible && <FloatingActionButton onClick={fabOnClick} />}
+      <div className="flex-1 flex flex-col h-full">
+        <AppHeader />
+
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+
+      <MobileNav onFabClick={fabOnClick} />
       
       <SyncIndicator />
 
