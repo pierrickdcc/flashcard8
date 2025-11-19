@@ -17,6 +17,8 @@ const ReviewMode = () => {
 
   const handleCardClick = () => { if (!isFlipped) setIsFlipped(true); };
 
+  const isFinished = currentIndex >= reviewCards.length;
+
   if (isFinished) {
     return (
       <div className={styles.reviewFinishedContainer}>
