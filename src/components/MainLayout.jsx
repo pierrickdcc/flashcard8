@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileNav from './MobileNav';
 import AppHeader from './AppHeader';
-import SyncIndicator from './SyncIndicator';
 import { useUIState } from '../context/UIStateContext';
 import { useAuth } from '../context/AuthContext';
 import { useDataSync } from '../context/DataSyncContext';
@@ -20,24 +19,15 @@ import ReviewSessionSetup from './ReviewSessionSetup';
 
 const MainLayout = ({ children }) => {
   const {
-    showAddContentModal,
-    setShowAddContentModal,
-    cardToEdit,
-    courseToEdit,
-    showAddSubjectModal,
-    setShowAddSubjectModal,
-    showConfigModal,
-    setShowConfigModal,
-    showDeleteSubjectModal,
-    setShowDeleteSubjectModal,
-    showSignOutModal,
-    setShowSignOutModal,
-    showMemoModal,
-    setShowMemoModal,
-    memoToEdit,
-    subjectToDelete,
-    showReviewSetupModal,
-    setShowReviewSetupModal,
+    showAddContentModal, setShowAddContentModal,
+    cardToEdit, courseToEdit,
+    showAddSubjectModal, setShowAddSubjectModal,
+    showConfigModal, setShowConfigModal,
+    showDeleteSubjectModal, setShowDeleteSubjectModal,
+    showSignOutModal, setShowSignOutModal,
+    showMemoModal, setShowMemoModal,
+    memoToEdit, subjectToDelete,
+    showReviewSetupModal, setShowReviewSetupModal,
   } = useUIState();
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -59,12 +49,13 @@ const MainLayout = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen bg-[var(--bg-body)] text-[var(--text-main)] overflow-hidden">
+    <div className="flex h-screen bg-[var(--bg-body)] text-[var(--text-main)] overflow-hidden font-sans selection:bg-indigo-500/30">
       <Sidebar />
       
-      <div className="flex-1 flex flex-col h-full relative">
+      <div className="flex-1 flex flex-col h-full relative min-w-0 transition-all duration-300">
         <AppHeader onProfileClick={() => setIsProfileModalOpen(true)} />
 
+        {/* Main Content Area - Matches Dashboard Layout requirements */}
         <main className="flex-1 overflow-y-auto scroll-smooth relative">
           {children}
         </main>
@@ -75,41 +66,15 @@ const MainLayout = ({ children }) => {
         onProfileClick={() => setIsProfileModalOpen(true)}
       />
       
-      <SyncIndicator />
-
-      {/* Render all modals here */}
-      <AddContentModal
-        isOpen={showAddContentModal}
-        onClose={() => setShowAddContentModal(false)}
-        cardToEdit={cardToEdit}
-        courseToEdit={courseToEdit}
-      />
+      {/* Modals */}
+      <AddContentModal isOpen={showAddContentModal} onClose={() => setShowAddContentModal(false)} cardToEdit={cardToEdit} courseToEdit={courseToEdit} />
       <AddSubjectModal isOpen={showAddSubjectModal} onClose={() => setShowAddSubjectModal(false)} />
       <ConfigModal isOpen={showConfigModal} onClose={() => setShowConfigModal(false)} />
-      <DeleteSubjectModal
-        isOpen={showDeleteSubjectModal}
-        onClose={() => setShowDeleteSubjectModal(false)}
-        subjectToDelete={subjectToDelete}
-      />
+      <DeleteSubjectModal isOpen={showDeleteSubjectModal} onClose={() => setShowDeleteSubjectModal(false)} subjectToDelete={subjectToDelete} />
       <SignOutConfirmationModal isOpen={showSignOutModal} onClose={() => setShowSignOutModal(false)} />
-      
-      <MemoModal
-        isOpen={showMemoModal}
-        onClose={() => setShowMemoModal(false)}
-        memoToEdit={memoToEdit}
-      />
-      <ReviewSessionSetup
-        isOpen={showReviewSetupModal}
-        onClose={() => setShowReviewSetupModal(false)}
-        onStartReview={handleStartReview}
-        subjects={subjects}
-      />
-      <ProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        userEmail={session?.user?.email}
-        onSignOut={signOut}
-      />
+      <MemoModal isOpen={showMemoModal} onClose={() => setShowMemoModal(false)} memoToEdit={memoToEdit} />
+      <ReviewSessionSetup isOpen={showReviewSetupModal} onClose={() => setShowReviewSetupModal(false)} onStartReview={handleStartReview} subjects={subjects} />
+      <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} userEmail={session?.user?.email} onSignOut={signOut} />
     </div>
   );
 };
