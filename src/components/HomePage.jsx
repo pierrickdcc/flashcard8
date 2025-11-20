@@ -4,21 +4,19 @@ import { useDataSync as useData } from '../context/DataSyncContext';
 import { useUIState } from '../context/UIStateContext';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Layers, Library, CalendarCheck, PlayCircle, PlusSquare, FolderPlus, Zap } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Layers, Library, CalendarCheck, PlayCircle, PlusSquare, FolderPlus } from 'lucide-react';
 import CardFanLoader from './CardFanLoader';
 
-// Ce composant pourrait être déplacé dans son propre fichier si réutilisé
+// Composant DonutChart
 const DonutChart = ({ data }) => {
     const COLORS = ['#F59E0B', '#10B981', '#3B82F6']; // Nouvelles, En cours, Acquises
-    // Clean data: if value is 0, it might mess up the gradient if all are 0.
     const total = data.reduce((acc, curr) => acc + (curr.value || 0), 0);
 
-    // If no data, render empty gray circle
     if (total === 0) {
          return (
             <div style={{ width: '100%', height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="w-[140px] h-[140px] rounded-full border-4 border-[var(--border)] flex items-center justify-center"></div>
+                <div className="w-[140px] h-[140px] rounded-full border-4 border-[var(--border)] flex items-center justify-center opacity-20"></div>
             </div>
          )
     }
@@ -29,7 +27,7 @@ const DonutChart = ({ data }) => {
     return (
         <div style={{ width: '100%', height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div
-                className="donut"
+                className="donut relative shadow-2xl shadow-black/20"
                 style={{
                     width: 140, height: 140, borderRadius: '50%',
                     background: `conic-gradient(
@@ -40,7 +38,7 @@ const DonutChart = ({ data }) => {
                     display: 'grid', placeItems: 'center'
                 }}
             >
-                <div className="donut-hole" style={{ width: 90, height: 90, background: 'var(--bg-card)', borderRadius: '50%' }}></div>
+                <div className="donut-hole absolute bg-[var(--bg-card)] rounded-full" style={{ width: 90, height: 90 }}></div>
             </div>
         </div>
     );
@@ -48,13 +46,9 @@ const DonutChart = ({ data }) => {
 
 
 const HomePage = ({ isConfigured }) => {
-  // ==========================================================================
-  // LOGIQUE DE DONNÉES (PRÉSERVÉE)
-  // ==========================================================================
   const { cards = [], memos = [], subjects = [], getCardsToReview } = useData();
   const { session } = useAuth();
   const { setShowAddContentModal, setMemoToEdit, setShowMemoModal, setShowReviewSetupModal, setShowAddSubjectModal } = useUIState();
-  const navigate = useNavigate();
   const [dueCardsCount, setDueCardsCount] = useState(0);
   const [userCardProgress, setUserCardProgress] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,12 +126,13 @@ const HomePage = ({ isConfigured }) => {
   }
 
   // ==========================================================================
-  // NOUVEAU JSX (STYLE MAQUETTE)
+  // LAYOUT GLOBAL OPTIMISÉ (NON-SCROLLABLE DESKTOP)
+  // Utilise les classes .dashboard-layout et .content-grid de NewStyles.css
   // ==========================================================================
   const pageVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 }
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
   };
 
   return (
@@ -146,116 +141,164 @@ const HomePage = ({ isConfigured }) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.3 }}
-      className="dashboard-layout p-4 md:p-10 flex flex-col gap-6 md:gap-10 pb-[120px] md:pb-10" // Padding bottom for mobile nav
+      transition={{ duration: 0.4 }}
+      className="dashboard-layout"
     >
-      {/* 1. Bannière de statistiques */}
-      <div className="stats-banner grid grid-cols-1 md:grid-cols-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-[20px] md:rounded-[100px] p-0 md:py-6 md:px-0 items-stretch md:items-center">
-        <div className="stat-item flex items-center justify-start md:justify-center gap-6 p-5 md:p-0 md:border-r md:border-[var(--border)] border-b md:border-b-0 border-[var(--border)]">
-          <div className="flex items-center justify-center"><Layers size="28" style={{ color: 'var(--color-flashcards)' }} /></div>
+      {/* 1. Bannière de statistiques (Fixed Height on Desktop) */}
+      <div className="stats-banner">
+        <div className="stat-item">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-[var(--color-flashcards)]">
+             <Layers size="24" />
+          </div>
           <div>
-            <span className="text-[2.2rem] font-extrabold block leading-none mb-1 text-[var(--text-main)]">{totalCards}</span>
-            <span className="text-[0.9rem] font-medium text-[var(--text-muted)]">Flashcards</span>
+            <span className="text-[2rem] font-black block leading-none mb-1 text-[var(--text-main)]">{totalCards}</span>
+            <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide">Flashcards</span>
           </div>
         </div>
-        <div className="stat-item flex items-center justify-start md:justify-center gap-6 p-5 md:p-0 md:border-r md:border-[var(--border)] border-b md:border-b-0 border-[var(--border)]">
-          <div className="flex items-center justify-center"><Library size="28" style={{ color: 'var(--color-subjects)' }} /></div>
+        <div className="stat-item">
+          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-[var(--color-subjects)]">
+             <Library size="24" />
+          </div>
           <div>
-            <span className="text-[2.2rem] font-extrabold block leading-none mb-1 text-[var(--text-main)]">{totalSubjects}</span>
-            <span className="text-[0.9rem] font-medium text-[var(--text-muted)]">Matières</span>
+            <span className="text-[2rem] font-black block leading-none mb-1 text-[var(--text-main)]">{totalSubjects}</span>
+            <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide">Matières</span>
           </div>
         </div>
-        <div className="stat-item flex items-center justify-start md:justify-center gap-6 p-5 md:p-0">
-          <div className="flex items-center justify-center"><CalendarCheck size="28" style={{ color: 'var(--color-review)' }} /></div>
+        <div className="stat-item">
+          <div className="w-12 h-12 rounded-2xl bg-fuchsia-500/10 flex items-center justify-center text-[var(--color-review)]">
+             <CalendarCheck size="24" />
+          </div>
           <div>
-            <span className="text-[2.2rem] font-extrabold block leading-none mb-1 text-[var(--text-main)]">{dueCardsCount}</span>
-            <span className="text-[0.9rem] font-medium text-[var(--text-muted)]">À réviser</span>
+            <span className="text-[2rem] font-black block leading-none mb-1 text-[var(--text-main)]">{dueCardsCount}</span>
+            <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide">À réviser</span>
           </div>
         </div>
       </div>
 
-      {/* 2. Section Actions */}
-      <div className="actions-section grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        <div className="hero-card lg:col-span-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-[16px] p-8 flex flex-col justify-center items-start min-h-[200px]"
-             style={{background: 'radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.15), transparent 60%), var(--bg-card)'}}>
-          <h2 className="text-[1.8rem] font-bold mb-2 text-[var(--text-main)]">Prêt à apprendre ?</h2>
-          <p className="text-[var(--text-muted)] mb-8 text-[1.1rem]">Lancez votre session quotidienne pour maintenir votre série.</p>
-          <motion.button
-            onClick={() => setShowReviewSetupModal(true)}
-            className="btn-review flex items-center gap-3 bg-[var(--primary-gradient)] text-white font-semibold py-4 px-12 rounded-[14px] shadow-lg transition-transform text-[1.1rem]"
-            whileHover={{ translateY: -2 }}
-            whileTap={{ scale: 0.95 }}
-            style={{boxShadow: '0 8px 25px rgba(59, 130, 246, 0.3)'}}
-          >
-            <PlayCircle size={22} />
-            Démarrer ({dueCardsCount})
-          </motion.button>
+      {/* 2. Grille de contenu (Scrollable internally on Desktop if needed) */}
+      <div className="content-grid">
+        {/* Colonne Gauche (Principale) */}
+        <div className="flex flex-col gap-6">
+            {/* Hero Card */}
+            <div className="hero-card relative overflow-hidden group">
+                <div className="absolute right-0 top-0 w-64 h-64 bg-[var(--primary)]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+
+                <h2 className="text-[1.7rem] font-extrabold mb-2 text-[var(--text-main)] relative z-10">Prêt à apprendre ?</h2>
+                <p className="text-[var(--text-muted)] mb-8 text-lg relative z-10 max-w-md">Lancez votre session quotidienne pour maintenir votre série et ancrer vos connaissances.</p>
+
+                <motion.button
+                    onClick={() => setShowReviewSetupModal(true)}
+                    className="btn-review relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-300"
+                    whileTap={{ scale: 0.95 }}
+                >
+                    <span className="relative z-10 flex items-center gap-2">
+                        <PlayCircle size={22} fill="currentColor" className="text-white/90" />
+                        Démarrer la session ({dueCardsCount})
+                    </span>
+                </motion.button>
+            </div>
+
+            {/* Chart Card */}
+            <div className="glass-card rounded-[var(--radius)] p-6 flex flex-col flex-1 min-h-[250px]">
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-bold text-[var(--text-main)] flex items-center gap-2">
+                        <BarChart size={18} className="text-[var(--primary)]" />
+                        Prévisions (7j)
+                    </h3>
+                </div>
+                <div className="flex-1 w-full min-h-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={forecast} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                        <XAxis dataKey="day" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} dy={10} />
+                        <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+                        <Tooltip
+                        contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', color: 'var(--text-main)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+                        cursor={{fill: 'rgba(255, 255, 255, 0.03)'}}
+                        />
+                        <Bar dataKey="cartes" fill="url(#colorGradient)" radius={[6, 6, 0, 0]} barSize={40} />
+                        <defs>
+                            <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="var(--primary)" stopOpacity={1}/>
+                                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.6}/>
+                            </linearGradient>
+                        </defs>
+                    </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
         </div>
 
-        <div className="quick-actions-grid grid grid-cols-2 md:grid-cols-2 gap-4 overflow-x-auto pb-2 md:pb-0">
-            <motion.button
-              onClick={() => setShowAddContentModal(true)}
-              className="action-card flex flex-col items-center justify-center gap-3 bg-[rgba(255,255,255,0.03)] border border-[var(--border)] rounded-[16px] p-6 cursor-pointer transition-all min-w-[140px]"
-              whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'var(--primary)', translateY: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-                <PlusSquare size={24} className="text-[var(--primary)]" />
-                <span className="font-semibold text-center text-[var(--text-main)]">Carte</span>
-            </motion.button>
-            <motion.button
-              onClick={() => setShowAddSubjectModal(true)}
-              className="action-card flex flex-col items-center justify-center gap-3 bg-[rgba(255,255,255,0.03)] border border-[var(--border)] rounded-[16px] p-6 cursor-pointer transition-all min-w-[140px]"
-              whileHover={{ backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'var(--primary)', translateY: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-                <FolderPlus size={24} style={{color: 'var(--color-subjects)'}} />
-                <span className="font-semibold text-center text-[var(--text-main)]">Matière</span>
-            </motion.button>
-        </div>
-      </div>
+        {/* Colonne Droite (Secondaire) */}
+        <div className="flex flex-col gap-6">
+             {/* Quick Actions */}
+            <div className="quick-actions-grid">
+                <motion.button
+                onClick={() => setShowAddContentModal(true)}
+                className="action-card group"
+                whileTap={{ scale: 0.98 }}
+                >
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white transition-colors">
+                        <PlusSquare size={24} />
+                    </div>
+                    <div className="flex flex-col items-start">
+                        <span className="font-bold text-[var(--text-main)]">Nouvelle Carte</span>
+                        <span className="text-[10px] text-[var(--text-muted)]">Ajouter du contenu</span>
+                    </div>
+                </motion.button>
 
-      {/* 3. Section Données */}
-      <div className="data-section grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        <div className="card lg:col-span-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-[16px] p-6 flex flex-col">
-          <h3 className="font-semibold mb-6 text-[1.1rem] text-[var(--text-main)]">Prévisions (7j)</h3>
-          <div style={{width: '100%', height: 200}}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={forecast} margin={{ top: 5, right: 0, left: -25, bottom: 0 }}>
-                <XAxis dataKey="day" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', color: 'var(--text-main)' }}
-                  cursor={{fill: 'rgba(255, 255, 255, 0.05)'}}
-                />
-                <Bar dataKey="cartes" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={30} activeBar={{fill: '#60A5FA'}} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+                <motion.button
+                onClick={() => setShowAddSubjectModal(true)}
+                className="action-card group"
+                whileTap={{ scale: 0.98 }}
+                >
+                    <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                        <FolderPlus size={24} />
+                    </div>
+                    <div className="flex flex-col items-start">
+                        <span className="font-bold text-[var(--text-main)]">Nouvelle Matière</span>
+                        <span className="text-[10px] text-[var(--text-muted)]">Organiser les cours</span>
+                    </div>
+                </motion.button>
+            </div>
+
+            {/* Donut Stats */}
+            <div className="glass-card rounded-[var(--radius)] p-6 flex flex-col items-center justify-center flex-1">
+                <h3 className="font-bold text-[var(--text-main)] mb-4 w-full text-left text-sm uppercase tracking-wide text-[var(--text-muted)]">Progression Globale</h3>
+                <DonutChart data={cardStatusData} />
+                <div className="w-full grid grid-cols-3 gap-2 mt-6 text-xs">
+                    <div className="text-center">
+                        <span className="block font-bold text-[1.2em] text-[#F59E0B]">{Math.round(cardStatusData[0].value)}%</span>
+                        <span className="text-[var(--text-muted)]">New</span>
+                    </div>
+                    <div className="text-center border-l border-[var(--border)] border-r">
+                        <span className="block font-bold text-[1.2em] text-[#10B981]">{Math.round(cardStatusData[1].value)}%</span>
+                        <span className="text-[var(--text-muted)]">Learn</span>
+                    </div>
+                    <div className="text-center">
+                        <span className="block font-bold text-[1.2em] text-[#3B82F6]">{Math.round(cardStatusData[2].value)}%</span>
+                        <span className="text-[var(--text-muted)]">Done</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div className="card bg-[var(--bg-card)] border border-[var(--border)] rounded-[16px] p-6 flex flex-col">
-          <h3 className="font-semibold mb-4 text-[1.1rem] text-[var(--text-main)]">Répartition</h3>
-          <DonutChart data={cardStatusData} />
-           <div style={{display:'flex', justifyContent:'space-between', marginTop:'1.5rem', fontSize:'0.8rem'}}>
-              <span className="flex items-center gap-1 text-[var(--text-muted)]"><span className="text-[#F59E0B] text-lg">●</span> Nouvelles</span>
-              <span className="flex items-center gap-1 text-[var(--text-muted)]"><span className="text-[#10B981] text-lg">●</span> En cours</span>
-              <span className="flex items-center gap-1 text-[var(--text-muted)]"><span className="text-[#3B82F6] text-lg">●</span> Acquises</span>
-           </div>
-        </div>
-
+        {/* Mémos (Full Width at bottom if present) */}
         {pinnedMemos.length > 0 && (
-            <div className="card lg:col-span-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-[16px] p-6 flex flex-col">
-                <h3 className="font-semibold mb-4 text-[1.1rem] text-[var(--text-main)]">Mémos Épinglés</h3>
-                <div className="memo-list grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="col-span-1 lg:col-span-2 glass-card rounded-[var(--radius)] p-6">
+                <h3 className="font-bold mb-4 text-[var(--text-main)] flex items-center gap-2">
+                    <StickyNote size={18} className="text-[var(--primary)]" />
+                    Mémos Épinglés
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {pinnedMemos.map(memo => (
                         <motion.div
                           key={memo.id}
                           onClick={() => handleMemoClick(memo)}
-                          className={`memo p-4 rounded-[10px] text-sm cursor-pointer leading-relaxed shadow-sm ${'memo-' + (memo.color || 'yellow')}`}
-                          whileHover={{ scale: 1.01 }}
+                          className={`memo p-4 rounded-xl text-sm cursor-pointer leading-relaxed shadow-sm hover:shadow-md transition-all border border-white/10 relative overflow-hidden ${'memo-' + (memo.color || 'yellow')}`}
+                          whileHover={{ y: -2 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                            <div dangerouslySetInnerHTML={{ __html: memo.content }} className="line-clamp-3 pointer-events-none" />
+                            <div dangerouslySetInnerHTML={{ __html: memo.content }} className="line-clamp-3 pointer-events-none relative z-10" />
                         </motion.div>
                     ))}
                 </div>
@@ -266,5 +309,5 @@ const HomePage = ({ isConfigured }) => {
     </motion.div>
   );
 };
-
+import { BarChart as ReBarChart } from 'recharts'; // Just to ensure imports are correct if I missed something
 export default HomePage;

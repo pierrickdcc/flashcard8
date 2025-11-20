@@ -34,7 +34,11 @@ export const UIStateProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.THEME, darkMode ? 'dark' : 'light');
-    document.body.className = darkMode ? 'dark' : 'light';
+    if (darkMode) {
+        document.documentElement.classList.remove('light');
+    } else {
+        document.documentElement.classList.add('light');
+    }
   }, [darkMode]);
 
   useEffect(() => {
