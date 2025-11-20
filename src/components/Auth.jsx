@@ -66,42 +66,38 @@ const Auth = () => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '2rem',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
-        backgroundSize: '400% 400%',
-        animation: 'gradientShift 15s ease infinite',
+        background: 'linear-gradient(135deg, #0E1116 0%, #161b22 100%)', // Dark theme background
+        overflow: 'hidden'
       }}
     >
-      <style>{`
-        @keyframes gradientShift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px]" />
+         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px]" />
+      </div>
 
       <motion.div
-        className="auth-container"
+        className="auth-container z-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         style={{
           width: '100%',
           maxWidth: '400px',
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
+          background: 'rgba(30, 35, 43, 0.8)', // bg-card with opacity
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)', // border color
           borderRadius: '24px',
           padding: '2rem',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-          <div className="logo-svg-container" style={{ width: '80px', height: '80px' }} />
           <div style={{ textAlign: 'center' }}>
-            <h1 className="logo-text" style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+            <h1 className="logo-text" style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#f0f6fc' }}>
               {mode === 'reset' ? 'Réinitialiser' : 'Flash'}
             </h1>
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
+            <p style={{ color: '#8b949e', fontSize: '0.875rem' }}>
               {mode === 'reset' ? 'Entrez votre email pour recevoir un lien.' : 'Apprenez plus intelligemment'}
             </p>
           </div>
@@ -109,13 +105,20 @@ const Auth = () => {
 
         <form onSubmit={handleAuthAction} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label htmlFor="email" className="label" style={{ color: '#334155', fontWeight: '500' }}>Adresse email</label>
+            <label htmlFor="email" className="label" style={{ color: '#f0f6fc', fontWeight: '500', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Adresse email</label>
             <input
               id="email"
               type="email"
               placeholder="vous@email.com"
               className="input"
-              style={{ marginTop: '0.5rem' }}
+              style={{
+                width: '100%',
+                background: '#0E1116',
+                border: '1px solid #30363d',
+                borderRadius: '10px',
+                padding: '0.75rem 1rem',
+                color: '#f0f6fc'
+              }}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -125,14 +128,21 @@ const Auth = () => {
           {mode !== 'reset' && (
             <>
               <div>
-                <label htmlFor="password" className="label" style={{ color: '#334155', fontWeight: '500' }}>Mot de passe</label>
-                <div style={{ position: 'relative', marginTop: '0.5rem' }}>
+                <label htmlFor="password" className="label" style={{ color: '#f0f6fc', fontWeight: '500', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Mot de passe</label>
+                <div style={{ position: 'relative' }}>
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     className="input"
-                    style={{ paddingRight: '3rem' }}
+                    style={{
+                        width: '100%',
+                        background: '#0E1116',
+                        border: '1px solid #30363d',
+                        borderRadius: '10px',
+                        padding: '0.75rem 3rem 0.75rem 1rem',
+                        color: '#f0f6fc'
+                    }}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -147,6 +157,10 @@ const Auth = () => {
                       right: '0.75rem',
                       top: '50%',
                       transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: '#8b949e',
+                      cursor: 'pointer'
                     }}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -156,13 +170,21 @@ const Auth = () => {
 
               {mode === 'signup' && (
                 <div>
-                  <label htmlFor="confirm-password" className="label" style={{ color: '#334155', fontWeight: '500' }}>Confirmer le mot de passe</label>
-                  <div style={{ position: 'relative', marginTop: '0.5rem' }}>
+                  <label htmlFor="confirm-password" className="label" style={{ color: '#f0f6fc', fontWeight: '500', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Confirmer le mot de passe</label>
+                  <div style={{ position: 'relative' }}>
                     <input
                       id="confirm-password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       className="input"
+                      style={{
+                        width: '100%',
+                        background: '#0E1116',
+                        border: '1px solid #30363d',
+                        borderRadius: '10px',
+                        padding: '0.75rem 1rem',
+                        color: '#f0f6fc'
+                      }}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
@@ -177,7 +199,7 @@ const Auth = () => {
                   <button
                     type="button"
                     onClick={() => setMode('reset')}
-                    style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontWeight: '500' }}
+                    style={{ background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontWeight: '500' }}
                   >
                     Mot de passe oublié ?
                   </button>
@@ -195,7 +217,7 @@ const Auth = () => {
                 background: 'rgba(239, 68, 68, 0.1)',
                 border: '1px solid rgba(239, 68, 68, 0.3)',
                 borderRadius: '8px',
-                color: '#dc2626',
+                color: '#ef4444',
                 fontSize: '0.875rem',
                 textAlign: 'center',
               }}
@@ -213,7 +235,7 @@ const Auth = () => {
                 background: 'rgba(34, 197, 94, 0.1)',
                 border: '1px solid rgba(34, 197, 94, 0.3)',
                 borderRadius: '8px',
-                color: '#16a34a',
+                color: '#22c55e',
                 fontSize: '0.875rem',
                 textAlign: 'center',
               }}
@@ -222,24 +244,36 @@ const Auth = () => {
             </motion.div>
           )}
           
-          <button
+          <motion.button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
+            style={{
+                width: '100%',
+                justifyContent: 'center',
+                marginTop: '0.5rem',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
+                color: 'white',
+                padding: '0.75rem',
+                borderRadius: '10px',
+                fontWeight: '600',
+                border: 'none',
+                cursor: 'pointer'
+            }}
             disabled={loading}
+            whileTap={{ scale: 0.95 }}
           >
             {loading
               ? (mode === 'reset' ? 'Envoi...' : (mode === 'login' ? 'Connexion...' : 'Inscription...'))
               : (mode === 'reset' ? 'Envoyer le lien' : (mode === 'login' ? 'Se connecter' : "S'inscrire"))
             }
-          </button>
+          </motion.button>
         </form>
         
         <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem' }}>
           <button
             type="button"
             onClick={() => setMode(mode === 'login' || mode === 'reset' ? 'signup' : 'login')}
-            style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontWeight: '500' }}
+            style={{ background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontWeight: '500' }}
           >
             {mode === 'login'
               ? "Pas encore de compte ? S'inscrire"

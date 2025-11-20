@@ -59,18 +59,21 @@ const MainLayout = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen bg-bg-body text-main">
+    <div className="flex h-screen bg-[var(--bg-body)] text-[var(--text-main)] overflow-hidden">
       <Sidebar />
       
-      <div className="flex-1 flex flex-col h-full">
-        <AppHeader />
+      <div className="flex-1 flex flex-col h-full relative">
+        <AppHeader onProfileClick={() => setIsProfileModalOpen(true)} />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto scroll-smooth relative">
           {children}
         </main>
       </div>
 
-      <MobileNav onFabClick={fabOnClick} />
+      <MobileNav
+        onFabClick={fabOnClick}
+        onProfileClick={() => setIsProfileModalOpen(true)}
+      />
       
       <SyncIndicator />
 
