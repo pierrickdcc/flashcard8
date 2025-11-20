@@ -26,7 +26,7 @@ const App = () => {
 
   if (authLoading || dataLoading) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-bg-body">
+      <div className="w-screen h-screen flex items-center justify-center bg-[var(--bg-body)]">
         <CardFanLoader />
       </div>
     );
@@ -49,22 +49,22 @@ const App = () => {
 
   return (
     <MainLayout>
+      {/* AnimatePresence pour les transitions de page fluides */}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={ <HomePage isConfigured={isConfigured} /> } />
           <Route path="/flashcards" element={<FlashcardsPage />} />
-        <Route path="/courses" element={<CoursePage />} />
-        <Route path="/courses/:courseId" element={<CourseViewer />} />
-        
-        <Route path="/memos" element={<MemoWallPage />} />
-        <Route path="/stats" element={<StatsPage />} />
-        
-        <Route path="/review/setup" element={
-          <ReviewSessionSetup
-            onStartReview={handleStartReview}
-            onClose={() => navigate('/')}
-          />}
-        />
+          <Route path="/courses" element={<CoursePage />} />
+          <Route path="/courses/:courseId" element={<CourseViewer />} />
+          <Route path="/memos" element={<MemoWallPage />} />
+          <Route path="/stats" element={<StatsPage />} />
+
+          <Route path="/review/setup" element={
+            <ReviewSessionSetup
+              onStartReview={handleStartReview}
+              onClose={() => navigate('/')}
+            />}
+          />
         </Routes>
       </AnimatePresence>
     </MainLayout>
