@@ -5,7 +5,7 @@ import { useUIState } from '../context/UIStateContext';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Layers, Library, CalendarCheck, PlayCircle, PlusSquare, FolderPlus } from 'lucide-react';
+import { Layers, Library, CalendarCheck, PlayCircle, PlusSquare, FolderPlus, StickyNote } from 'lucide-react';
 import CardFanLoader from './CardFanLoader';
 
 // Composant DonutChart
