@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import Modal from './Modal'; // Updated import
 
 const ReviewSessionSetup = ({ onStartReview, onClose, isOpen, subjects = [] }) => {
   const [isCramMode, setIsCramMode] = useState(false);
@@ -11,109 +11,94 @@ const ReviewSessionSetup = ({ onStartReview, onClose, isOpen, subjects = [] }) =
     onStartReview({ isCramMode, includeFuture, subjectId: selectedSubject });
   };
 
-  if (!isOpen) return null;
-
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="modal-backdrop" onClick={onClose}>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            className="modal-content"
-            style={{ maxWidth: '500px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header">
-              <h2>Configurer la révision</h2>
-              <button onClick={onClose} className="icon-btn">
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <div className="form-group">
-                <label className="label">Quelles cartes réviser ?</label>
-                <div className="space-y-3 mt-2">
-                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted-bg transition-colors">
-                    <input
-                      type="radio"
-                      name="card-selection"
-                      checked={!includeFuture}
-                      onChange={() => setIncludeFuture(false)}
-                      className="w-4 h-4"
-                      style={{ accentColor: 'var(--primary-color)' }}
-                    />
-                    <div>
-                      <div className="font-medium text-text-heading-color">Cartes dues aujourd'hui</div>
-                      <div className="text-sm text-muted-foreground">Réviser uniquement les cartes programmées</div>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted-bg transition-colors">
-                    <input
-                      type="radio"
-                      name="card-selection"
-                      checked={includeFuture}
-                      onChange={() => setIncludeFuture(true)}
-                      className="w-4 h-4"
-                      style={{ accentColor: 'var(--primary-color)' }}
-                    />
-                    <div>
-                      <div className="font-medium text-text-heading-color">Toutes les cartes</div>
-                      <div className="text-sm text-muted-foreground">Étude libre (inclut les cartes futures)</div>
-                    </div>
-                  </label>
-                </div>
+    <Modal isOpen={isOpen} onClose={onClose} title="Configurer la révision" maxWidth="500px">
+      <div className="flex flex-col gap-6">
+        <div className="form-group">
+          <label className="label text-sm font-medium mb-3 block">Quelles cartes réviser ?</label>
+          <div className="space-y-3">
+            <label className="flex items-center gap-4 cursor-pointer p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-body)] hover:border-[var(--primary)] transition-all relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[var(--primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
+              <input
+                type="radio"
+                name="card-selection"
+                checked={!includeFuture}
+                onChange={() => setIncludeFuture(false)}
+                className="w-5 h-5 accent-[var(--primary)]"
+              />
+              <div>
+                <div className="font-medium text-[var(--text-main)]">Cartes dues aujourd'hui</div>
+                <div className="text-xs text-[var(--text-muted)] mt-1">Optimisé pour la rétention à long terme (SRS)</div>
               </div>
+            </label>
 
-              <div className="form-group">
-                <label className="label" htmlFor="subject-select">Matière</label>
-                <select
-                  id="subject-select"
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="select mt-2"
-                  style={{ width: '100%' }}
-                >
-                  <option value="all">Toutes les matières</option>
-                  {subjects.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+            <label className="flex items-center gap-4 cursor-pointer p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-body)] hover:border-[var(--primary)] transition-all relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[var(--primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
+              <input
+                type="radio"
+                name="card-selection"
+                checked={includeFuture}
+                onChange={() => setIncludeFuture(true)}
+                className="w-5 h-5 accent-[var(--primary)]"
+              />
+              <div>
+                <div className="font-medium text-[var(--text-main)]">Toutes les cartes</div>
+                <div className="text-xs text-[var(--text-muted)] mt-1">Révision libre, incluant les cartes futures</div>
               </div>
-
-              <div className="form-group">
-                <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted-bg transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={isCramMode}
-                    onChange={(e) => setIsCramMode(e.target.checked)}
-                    className="w-4 h-4"
-                    style={{ accentColor: 'var(--primary-color)' }}
-                  />
-                  <div>
-                    <div className="font-medium text-text-heading-color">Mode bachotage</div>
-                    <div className="text-sm text-muted-foreground">La progression ne sera pas sauvegardée</div>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <button onClick={onClose} className="btn btn-secondary">
-                Annuler
-              </button>
-              <button onClick={handleStart} className="btn btn-primary">
-                Démarrer
-              </button>
-            </div>
-          </motion.div>
+            </label>
+          </div>
         </div>
-      )}
-    </AnimatePresence>
+
+        <div className="form-group">
+          <label className="label text-sm font-medium mb-2 block" htmlFor="subject-select">Matière cible</label>
+          <select
+            id="subject-select"
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+            className="select w-full bg-[var(--bg-body)] border-[var(--border)] rounded-lg p-3 text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
+          >
+            <option value="all">Toutes les matières</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors">
+            <input
+              type="checkbox"
+              checked={isCramMode}
+              onChange={(e) => setIsCramMode(e.target.checked)}
+              className="w-5 h-5 accent-[var(--primary)] rounded"
+            />
+            <div>
+              <div className="font-medium text-[var(--text-main)]">Mode Bachotage</div>
+              <div className="text-xs text-[var(--text-muted)]">Ne modifie pas les dates de prochaine révision</div>
+            </div>
+          </label>
+        </div>
+
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-[var(--text-muted)] hover:bg-white/5 transition-colors font-medium"
+          >
+            Annuler
+          </button>
+          <motion.button
+            onClick={handleStart}
+            className="px-6 py-2 rounded-lg bg-[var(--primary-gradient)] text-white font-medium shadow-lg shadow-blue-500/20"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Commencer
+          </motion.button>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

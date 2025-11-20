@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useTransform, AnimatePresence, useSpring } from 'framer-motion';
 import { useDataSync } from '../context/DataSyncContext';
 import { useUIState } from '../context/UIStateContext';
 import { X, RotateCcw, CheckCircle, Home, BookOpen } from 'lucide-react';
@@ -8,13 +8,54 @@ import { Link, useNavigate } from 'react-router-dom';
 import TextFit from '@ataverascrespo/react18-ts-textfit';
 import styles from './ReviewMode.module.css';
 
-// --- Composant Card3D (Physique Spring & Tilt) ---
+// --- Composant Card3D (Physique Spring & Tilt & Parallax Hover) ---
 const Card3D = ({ children, onSwipe, isFlipped, onClick }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [10, -10]);
-  const rotateY = useTransform(x, [-100, 100], [-10, 10]);
+
+  // Tilt state for hover effect
+  const mouseX = useSpring(0, { stiffness: 300, damping: 30 });
+  const mouseY = useSpring(0, { stiffness: 300, damping: 30 });
+
+  // Combine drag tilt and hover tilt
+  // When dragging (x or y != 0), we prioritize drag tilt.
+  // When not dragging, we use mouse coordinates relative to center.
+
+  const rotateX = useTransform([y, mouseY], (latest) => {
+      const dragY = latest[0];
+      const hoverY = latest[1];
+      // If dragging, use dragY. Else use hoverY.
+      // Note: This is a simplified logic. Ideally we sum them or switch context.
+      // Since drag overrides hover interaction usually, we can just sum them with weights.
+      return (dragY / -10) + (hoverY / -20); // Inverted for natural feel
+  });
+
+  const rotateY = useTransform([x, mouseX], (latest) => {
+      const dragX = latest[0];
+      const hoverX = latest[1];
+      return (dragX / 10) + (hoverX / 20);
+  });
+
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]); // Fade out on swipe
+
+  const handleMouseMove = (e) => {
+      // Get element dimensions to normalize mouse position
+      const rect = e.currentTarget.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      // Calculate distance from center
+      const deltaX = e.clientX - centerX;
+      const deltaY = e.clientY - centerY;
+
+      mouseX.set(deltaX);
+      mouseY.set(deltaY);
+  };
+
+  const handleMouseLeave = () => {
+      mouseX.set(0);
+      mouseY.set(0);
+  };
 
   return (
     <motion.div
@@ -36,6 +77,8 @@ const Card3D = ({ children, onSwipe, isFlipped, onClick }) => {
       }}
       whileHover={{ scale: 1.02, cursor: "grab" }}
       whileTap={{ scale: 0.95, cursor: "grabbing" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       className="perspective-1000 w-full max-w-2xl aspect-[4/3] mx-auto relative"
     >
         {children}
@@ -59,13 +102,19 @@ const ReviewMode = () => {
   const currentCard = reviewCards[currentIndex];
   const isFinished = !currentCard || currentIndex >= reviewCards.length;
 
+  // Trigger Confetti when finished
   useEffect(() => {
     if (isFinished) {
-      confetti({
-        particleCount: 150,
-        spread: 90,
-        origin: { y: 0.6 }
-      });
+      // Use a timeout to allow the final animation to settle or just ensure DOM is ready
+      const timeout = setTimeout(() => {
+          confetti({
+            particleCount: 150,
+            spread: 90,
+            origin: { y: 0.6 },
+            colors: ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B'] // Brand colors
+          });
+      }, 300);
+      return () => clearTimeout(timeout);
     }
   }, [isFinished]);
 
@@ -86,23 +135,16 @@ const ReviewMode = () => {
     setSwipeDirection(direction);
     // Wait for animation to potentially finish or just trigger rating
     // Mapping directions to ratings
-    // Left: À revoir (1)
-    // Down: Difficile (2)
-    // Up: Facile (4) (Merging Easy/Medium as per user request "Haut Facile/Moyen")
-    // Right: Très Facile (5)
-
-    // Note: In strict SM-2, 3 is Pass/Good. 4 is Easy.
-
     setTimeout(() => {
         switch (direction) {
-            case 'left': handleRating(1); break;
-            case 'down': handleRating(2); break;
-            case 'up': handleRating(4); break;
-            case 'right': handleRating(5); break;
+            case 'left': handleRating(1); break; // À revoir
+            case 'down': handleRating(2); break; // Difficile
+            case 'up': handleRating(4); break;   // Facile
+            case 'right': handleRating(5); break;// Très Facile
             default: break;
         }
         setSwipeDirection(null);
-    }, 200); // Small delay for visual feedback if needed
+    }, 200);
   };
 
   const handleQuit = () => {

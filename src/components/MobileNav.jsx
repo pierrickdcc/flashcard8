@@ -8,7 +8,6 @@ const MobileNav = ({ onFabClick, onProfileClick }) => {
     { to: '/', label: 'Accueil', icon: LayoutGrid },
     { to: '/flashcards', label: 'Cartes', icon: Layers },
     { to: '/courses', label: 'Cours', icon: BookOpen },
-    // Profil is a special action, not a route in this context as per instructions
   ];
 
   return (
@@ -42,13 +41,26 @@ const MobileNav = ({ onFabClick, onProfileClick }) => {
       </nav>
 
       {/* Bouton d'action flottant (FAB) */}
-      <div className="md:hidden fixed z-[60]" style={{bottom: 'calc(var(--nav-height) + 20px)', right: '20px'}}>
+      {/* Mobile: Above nav bar */}
+      <div className="md:hidden fixed z-[60]" style={{bottom: 'calc(var(--nav-height) + 16px)', right: '16px'}}>
         <motion.button
           onClick={onFabClick}
-          className="w-[60px] h-[60px] rounded-full bg-[var(--primary-gradient)] text-white grid place-items-center shadow-lg cursor-pointer border-none"
-          style={{boxShadow: '0 8px 20px rgba(59, 130, 246, 0.5)'}}
+          className="w-14 h-14 rounded-full bg-[var(--primary-gradient)] text-white grid place-items-center shadow-lg shadow-blue-500/40 cursor-pointer border-none"
           whileTap={{ scale: 0.9 }}
           transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        >
+          <Plus size={28} />
+        </motion.button>
+      </div>
+
+      {/* Desktop: Fixed Bottom Right Corner */}
+      <div className="hidden md:block fixed z-[60] bottom-8 right-8">
+        <motion.button
+          onClick={onFabClick}
+          className="w-14 h-14 rounded-full bg-[var(--primary-gradient)] text-white grid place-items-center shadow-xl shadow-blue-500/30 cursor-pointer border-none hover:scale-110 transition-transform"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          title="Ajouter du contenu"
         >
           <Plus size={28} />
         </motion.button>
