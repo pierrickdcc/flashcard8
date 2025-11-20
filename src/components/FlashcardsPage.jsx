@@ -75,82 +75,95 @@ const FlashcardsPage = () => {
       animate="animate"
       exit="exit"
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="p-8 max-w-[1600px] mx-auto w-full flex flex-col gap-8"
+      className="p-8 max-w-[1800px] mx-auto w-full flex flex-col gap-8 dashboard-layout" // Added dashboard-layout for consistent padding
     >
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-main)] flex items-center gap-3">
-            <Layers className="text-[var(--color-flashcards)]" size={32} />
+          <h1 className="text-4xl font-bold text-[var(--text-main)] flex items-center gap-3 tracking-tight">
+            <div className="p-2 bg-[rgba(99,102,241,0.1)] rounded-xl border border-[rgba(99,102,241,0.2)]">
+                <Layers className="text-[var(--primary)]" size={32} />
+            </div>
             Flashcards
           </h1>
-          <p className="text-[var(--text-muted)] mt-1">Gérez votre base de connaissances et révisez vos acquis.</p>
+          <p className="text-[var(--text-muted)] mt-2 text-lg">
+              Explorez votre base de connaissances et maîtrisez vos sujets.
+          </p>
         </div>
 
         {dueCardsCount > 0 && (
            <motion.button
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(99, 102, 241, 0.5)" }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowReviewSetupModal(true)}
-            className="flex items-center gap-3 px-6 py-3 bg-[var(--primary-gradient)] rounded-xl text-white font-bold shadow-lg shadow-blue-500/25"
+            className="btn-review" // Use new shared class
           >
-            <Brain size={20} />
+            <Brain size={24} />
             <span>Réviser {dueCardsCount} cartes</span>
           </motion.button>
         )}
       </header>
 
-      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between bg-[var(--bg-card)] p-4 rounded-2xl border border-[var(--border)] shadow-sm">
-         <div className="relative flex-1 w-full max-w-md">
-           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+      {/* Controls Bar - Glassmorphism */}
+      <div className="glass-panel p-4 rounded-2xl flex flex-col lg:flex-row gap-4 items-center justify-between">
+
+         {/* Search */}
+         <div className="relative flex-1 w-full max-w-lg">
+           <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
            <input
             type="text"
-            placeholder="Rechercher une carte..."
-            className="w-full bg-[var(--bg-body)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
+            placeholder="Rechercher une notion..."
+            className="glass-input w-full rounded-xl py-3 pl-12 pr-4 text-[var(--text-main)]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-          <div className="flex items-center gap-2 bg-[var(--bg-body)] border border-[var(--border)] rounded-xl px-3 py-2">
-            <Filter size={16} className="text-[var(--text-muted)]" />
+        <div className="flex items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+
+          {/* Filter */}
+          <div className="glass-input flex items-center gap-3 rounded-xl px-4 py-3 min-w-[220px]">
+            <Filter size={18} className="text-[var(--text-muted)]" />
             <select
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="bg-transparent border-none text-sm text-[var(--text-main)] focus:ring-0 cursor-pointer min-w-[150px]"
+              className="bg-transparent border-none text-sm text-[var(--text-main)] focus:ring-0 cursor-pointer w-full outline-none"
+              style={{ backgroundImage: 'none' }} // Remove default arrow if needed, or keep for clarity
             >
-              <option value="all">Toutes les matières</option>
+              <option value="all" className="bg-[var(--bg-card)]">Toutes les matières</option>
               {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
+                <option key={s.id} value={s.id} className="bg-[var(--bg-card)]">
                   {s.name}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="h-8 w-[1px] bg-[var(--border)] mx-1 hidden lg:block"></div>
+          <div className="h-10 w-[1px] bg-[rgba(255,255,255,0.1)] hidden lg:block"></div>
 
-          <div className="flex bg-[var(--bg-body)] border border-[var(--border)] rounded-xl p-1">
+          {/* View Toggle */}
+          <div className="flex bg-[rgba(0,0,0,0.2)] rounded-xl p-1 border border-[rgba(255,255,255,0.05)]">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[var(--bg-card)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
+              className={`p-3 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[var(--bg-card)] text-[var(--primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
               title="Vue Grille"
             >
-              <LayoutGrid size={18} />
+              <LayoutGrid size={20} />
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-2 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-[var(--bg-card)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
+              className={`p-3 rounded-lg transition-all ${viewMode === 'table' ? 'bg-[var(--bg-card)] text-[var(--primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                title="Vue Liste"
             >
-              <List size={18} />
+              <List size={20} />
             </button>
           </div>
         </div>
       </div>
 
+      {/* Content Area */}
       <div className="min-h-[400px]">
         {viewMode === 'grid' ? (
           <CardGrid
