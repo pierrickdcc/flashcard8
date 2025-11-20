@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useDataSync } from '../context/DataSyncContext';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Clock, BookOpen, Search } from 'lucide-react';
+import { FileText, Clock, BookOpen, Search, ChevronRight } from 'lucide-react';
 import EmptyState from './EmptyState';
 
 const CoursePage = () => {
@@ -49,28 +49,6 @@ const CoursePage = () => {
     }).format(date);
   };
 
-  const handleCourseClick = (courseId) => {
-    navigate(`/courses/${courseId}`);
-  };
-
-  if (coursesBySubject.length === 0) {
-    return (
-      <div className="main-content">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Mes Cours</h1>
-            <p className="text-muted-foreground">Parcourez et gérez vos pages de cours</p>
-          </div>
-        </div>
-        <EmptyState
-          icon={BookOpen}
-          title="Aucun cours trouvé"
-          message="Ajoutez votre premier cours pour le voir apparaître ici."
-        />
-      </div>
-    );
-  }
-
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -83,58 +61,91 @@ const CoursePage = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.3 }}
-      className="main-content p-8"
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="p-8 max-w-[1600px] mx-auto w-full flex flex-col gap-8"
     >
-      <div className="flex justify-between items-center mb-6">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Mes Cours</h1>
-          <p className="text-muted-foreground">Parcourez et gérez vos pages de cours</p>
+          <h1 className="text-3xl font-bold text-[var(--text-main)] flex items-center gap-3">
+            <BookOpen className="text-[var(--color-subjects)]" size={32} />
+            Mes Cours
+          </h1>
+          <p className="text-[var(--text-muted)] mt-1">Bibliothèque de vos fiches de révision.</p>
         </div>
-        <div className="search-bar" style={{ maxWidth: '300px' }}>
-          <Search size={18} className="search-icon" />
-          <input
+
+        <div className="relative w-full max-w-md">
+           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+           <input
             type="text"
-            placeholder="Rechercher un cours..."
-            className="search-input"
+            placeholder="Rechercher dans vos cours..."
+            className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text-main)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all shadow-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-      </div>
+      </header>
 
-      <div className="course-list">
-        {coursesBySubject.map(subject => (
-          <div key={subject.id} className="course-subject-section">
-            <h2>{subject.name}</h2>
-            <div className="course-items">
-              {subject.courses.map(course => (
-                <div
-                  key={course.id}
-                  className="course-item"
-                  onClick={() => handleCourseClick(course.id)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div className="course-item-main">
-                    <div className="course-item-icon">
-                      <FileText size={20} />
+      {coursesBySubject.length === 0 ? (
+        <EmptyState
+          icon={BookOpen}
+          title="Aucun cours trouvé"
+          message={searchQuery ? "Aucun résultat pour votre recherche." : "Commencez par ajouter votre premier cours."}
+        />
+      ) : (
+        <div className="flex flex-col gap-8">
+          {coursesBySubject.map(subject => (
+            <motion.section
+              key={subject.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center gap-3 mb-4 ml-1">
+                <h2 className="text-xl font-semibold text-[var(--text-main)]">{subject.name}</h2>
+                <div className="h-[1px] flex-1 bg-[var(--border)] opacity-50"></div>
+                <span className="text-xs font-medium text-[var(--text-muted)] px-2 py-1 rounded-full bg-[var(--bg-card)] border border-[var(--border)]">
+                  {subject.courses.length} cours
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {subject.courses.map(course => (
+                  <motion.div
+                    key={course.id}
+                    whileHover={{ y: -5, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.3)' }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate(`/courses/${course.id}`)}
+                    className="glass-card group cursor-pointer relative overflow-hidden border border-[var(--border)] hover:border-[var(--primary)] transition-colors"
+                  >
+                    {/* Decoration Gradient */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2.5 rounded-lg bg-[var(--bg-body)] text-[var(--primary)]">
+                        <FileText size={24} />
+                      </div>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0 text-[var(--text-muted)]">
+                        <ChevronRight size={20} />
+                      </div>
                     </div>
-                    <div className="course-item-text">
-                      <h3>{course.title}</h3>
+
+                    <h3 className="text-lg font-bold text-[var(--text-main)] mb-2 line-clamp-2 group-hover:text-[var(--primary)] transition-colors">
+                      {course.title}
+                    </h3>
+
+                    <div className="mt-auto pt-4 flex items-center justify-between text-xs text-[var(--text-muted)] border-t border-white/5">
+                      <span className="flex items-center gap-1.5">
+                        <Clock size={14} />
+                        {formatDate(course.updated_at)}
+                      </span>
                     </div>
-                  </div>
-                  <div className="course-item-meta">
-                    <span className="flex items-center gap-1.5">
-                      <Clock size={14} />
-                      Modifié {formatDate(course.updated_at)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 };
