@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Layers, Library, CalendarCheck, PlayCircle, PlusSquare, FolderPlus, StickyNote } from 'lucide-react';
 import CardFanLoader from './CardFanLoader';
+import AnimatedBackground from './AnimatedBackground';
 
 // Composant DonutChart
 const DonutChart = ({ data }) => {
@@ -142,10 +143,12 @@ const HomePage = ({ isConfigured }) => {
       animate="animate"
       exit="exit"
       transition={{ duration: 0.4 }}
-      className="dashboard-layout"
+      className="dashboard-layout relative overflow-hidden"
     >
+      <AnimatedBackground variant="subtle" />
+
       {/* 1. Bannière de statistiques (Fixed Height on Desktop) */}
-      <div className="stats-banner">
+      <div className="stats-banner relative z-10">
         <div className="stat-item">
           <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-[var(--color-flashcards)]">
              <Layers size="24" />
@@ -176,7 +179,7 @@ const HomePage = ({ isConfigured }) => {
       </div>
 
       {/* 2. Grille de contenu (Scrollable internally on Desktop if needed) */}
-      <div className="content-grid">
+      <div className="content-grid relative z-10">
         {/* Colonne Gauche (Principale) */}
         <div className="flex flex-col gap-6">
             {/* Hero Card */}
